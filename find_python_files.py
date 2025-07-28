@@ -100,6 +100,10 @@ def find_python_files(
         "build",
         "dist",
         ".env*",
+        "python_embeded",
+        "python_embedded",
+        ".vscode",
+        ".vs"
     ]
 
     # Combine default and custom patterns

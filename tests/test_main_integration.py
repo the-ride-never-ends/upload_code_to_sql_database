@@ -206,6 +206,7 @@ def _private_helper():
                 exclude=[],
                 db_config=None,
                 verbose=True,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -328,6 +329,7 @@ def _private_helper():
                 exclude=[],
                 db_config=None,
                 verbose=True,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -451,6 +453,7 @@ def _private_helper():
                 exclude=["excluded_dir/*", "*test*"],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -536,6 +539,7 @@ def _private_helper():
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -665,6 +669,7 @@ def invalid_syntax(
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             # Database connection fails
@@ -731,6 +736,7 @@ def invalid_syntax(
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database
@@ -816,6 +822,7 @@ def invalid_syntax(
                 exclude=[],
                 db_config=None,
                 verbose=True,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database
@@ -932,6 +939,7 @@ def invalid_syntax(
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database
@@ -1002,6 +1010,7 @@ def invalid_syntax(
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database
@@ -1142,6 +1151,7 @@ def nested_container():
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -1257,6 +1267,7 @@ class ExistingClass:
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -1334,6 +1345,7 @@ class ExistingClass:
                 exclude=[],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -1450,6 +1462,7 @@ def simple_function():
                 exclude=[],
                 db_config=str(config_file),  # Custom config path
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -1664,6 +1677,7 @@ def has_docs():
                 exclude=[],
                 db_config=None,
                 verbose=True,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -1784,6 +1798,7 @@ def has_docs():
                 exclude=[],
                 db_config=None,
                 verbose=True,  # Verbose mode enabled
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -2001,6 +2016,7 @@ database = test_db
                 exclude=["old_code/*", "*.backup", "tests/*"],
                 db_config=str(custom_config),
                 verbose=True,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -2090,6 +2106,7 @@ database = test_db
                 exclude=[],  # Default: no custom exclusions
                 db_config=None,  # Default: no custom config
                 verbose=False,  # Default: not verbose
+                bypass_cid_check=False,  # Default: no bypass
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -2178,6 +2195,7 @@ database = test_db
                 exclude=["test*", "*.backup", "old_code/", "temp*"],
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -2261,6 +2279,7 @@ database = test_db
                 exclude=["tests/", "*.backup"],  # Multiple exclusions
                 db_config=None,
                 verbose=False,
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection
@@ -2333,6 +2352,7 @@ database = test_db
                 exclude=[],
                 db_config=None,
                 verbose=True,  # Verbose enabled
+                bypass_cid_check=False,
             )
 
             mock_start_db.return_value = mock_database_connection

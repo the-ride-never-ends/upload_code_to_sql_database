@@ -185,6 +185,8 @@ def main() -> int:
         # Initialize - Parse command line arguments
         args = parse_arguments()
 
+        bypass_cid_check = args.bypass_cid_check
+
         # Initialize statistics tracker
         stats = UploadStats()
 
@@ -260,9 +262,12 @@ def main() -> int:
                     continue
 
                 if cid_exists:
-                    print(f"    Duplicate metadata CID found, skipping")
-                    stats.skipped_duplicates += 1
-                    continue
+                    if bypass_cid_check:
+                        print(f"    Duplicate metadata CID found, but bypassing check")
+                    else:
+                        print(f"    Duplicate metadata CID found, skipping")
+                        stats.skipped_duplicates += 1
+                        continue
 
                 # Database Operations - Insert into database
                 try:

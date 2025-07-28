@@ -155,23 +155,24 @@ class TestCreateCodeEntry:
             - code_name: matches callable name
             - code_type: correctly mapped from callable type
             - is_test: False for non-test code
-            - file_path: relative to current working directory
+            - file_path: Absolute path to the file
             - tags: extracted from file path components
         """
         with patch("code_entry.create_code_entry.get_cid", return_value=mock_cid):
             with patch("pathlib.Path.cwd", return_value=Path("/home/user")):
-                result = create_code_entry(
-                    basic_function_callable_info, basic_file_path
-                )
+                with patch("pathlib.Path.resolve", return_value=basic_file_path):
+                    result = create_code_entry(
+                        basic_function_callable_info, basic_file_path
+                    )
 
-                metadata = result.metadata
-                assert metadata["code_cid"] == mock_cid
-                assert metadata["code_name"] == "calculate_sum"
-                assert metadata["code_type"] == "function"
-                assert metadata["is_test"] is False
-                assert metadata["file_path"] == "project/math/operations.py"
-                assert isinstance(metadata["tags"], list)
-                assert "math" in metadata["tags"]  # Extracted from path
+                    metadata = result.metadata
+                    assert metadata["code_cid"] == mock_cid
+                    assert metadata["code_name"] == "calculate_sum"
+                    assert metadata["code_type"] == "function"
+                    assert metadata["is_test"] is False
+                    assert metadata["file_path"] == "home/user/project/math/operations.py"
+                    assert isinstance(metadata["tags"], list)
+                    assert "math" in metadata["tags"]  # Extracted from path
 
     def test_create_code_entry_test_detection_by_name(self, basic_file_path, mock_cid):
         """
@@ -279,25 +280,26 @@ class TestCreateCodeEntry:
                     result = create_code_entry(callable_info, basic_file_path)
                     assert result.metadata["code_type"] == code_type
 
-    def test_create_code_entry_file_path_relative(
+    def test_create_code_entry_file_path_remains_absolute(
         self, basic_function_callable_info, mock_cid
     ):
         """
         GIVEN absolute file_path
         WHEN create_code_entry is called
         THEN expect:
-            - metadata['file_path'] is relative to current working directory
-            - Absolute paths are converted to relative
+            - metadata['file_path'] is an absolute path
+            - Absolute paths stay absolute
             - Path separators are normalized
         """
         absolute_path = Path("/home/user/project/utils/helpers.py")
 
         with patch("code_entry.create_code_entry.get_cid", return_value=mock_cid):
             with patch("pathlib.Path.cwd", return_value=Path("/home/user")):
-                result = create_code_entry(basic_function_callable_info, absolute_path)
+                with patch("pathlib.Path.resolve", return_value=absolute_path):
+                    result = create_code_entry(basic_function_callable_info, absolute_path)
 
-                assert result.metadata["file_path"] == "project/utils/helpers.py"
-                assert not result.metadata["file_path"].startswith("/")
+                    assert result.metadata["file_path"] == "home/user/project/utils/helpers.py"
+                    assert not result.metadata["file_path"].startswith("/")
 
     def test_create_code_entry_tag_extraction_from_path(
         self, basic_function_callable_info, mock_cid
@@ -338,6 +340,8 @@ class TestCreateCodeEntry:
                     assert (
                         excluded not in tags
                     ), f"Excluded directory '{excluded}' found in tags"
+
+        # assert True is False, "Debug to see the tags generated"
 
     def test_create_code_entry_escapes_strings_for_database(
         self, basic_file_path, mock_cid

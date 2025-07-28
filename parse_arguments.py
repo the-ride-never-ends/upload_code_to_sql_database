@@ -143,6 +143,14 @@ Examples:
         help="Enable verbose output (default: False)",
     )
 
+    parser.add_argument(
+        "--bypass-cid-check",
+        "-b",
+        action="store_true",
+        default=False,
+        help="Bypass CID existence check (default: False). May cause unexpected behavior if CID already exists.",
+    )
+
     # Parse the arguments
     args = parser.parse_args()
 

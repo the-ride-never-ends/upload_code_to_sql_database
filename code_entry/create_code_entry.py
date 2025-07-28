@@ -20,29 +20,6 @@ except Exception as e:
     raise RuntimeError(f"Failed to download NLTK resources: {e}")
 
 
-def _get_all_nouns_and_proper_nouns_from_list_of_strings(strings: List[str]) -> List[str]:
-    """
-    Extract all nouns and proper nouns from a list of strings.
-    
-    Args:
-        strings: List of strings to process
-    Returns:
-        List of unique nouns and proper nouns found in the strings
-    """
-    nouns = set()
-    for string in strings:
-        tokens = word_tokenize(string)
-        pos_tags = nltk.pos_tag(tokens)
-        
-        for word, tag in pos_tags:
-            if tag.startswith('NN') or tag.startswith('NNP'):  # Nouns and proper nouns
-                nouns.add(word.lower())
-    
-    return list(nouns)
-
-
-
-
 @dataclass
 class CodeEntry:
     """
@@ -254,6 +231,27 @@ def _is_test_code(name: str, file_path: Path) -> bool:
     return False
 
 
+def _get_all_nouns_and_proper_nouns_from_list_of_strings(strings: List[str]) -> List[str]:
+    """
+    Extract all nouns and proper nouns from a list of strings.
+    
+    Args:
+        strings: List of strings to process
+    Returns:
+        List of unique nouns and proper nouns found in the strings
+    """
+    nouns = set()
+    for string in strings:
+        tokens = word_tokenize(string)
+        pos_tags = nltk.pos_tag(tokens)
+
+        for word, tag in pos_tags:
+            if tag.startswith('NN') or tag.startswith('NNP'):  # Nouns and proper nouns
+                nouns.add(word.lower())
+
+    return list(nouns)
+
+
 def _extract_tags(file_path: Path, current_dir: Path) -> List[str]:
     """
     Extract meaningful tags from file path components.
@@ -265,6 +263,12 @@ def _extract_tags(file_path: Path, current_dir: Path) -> List[str]:
     Returns:
         List of tag strings derived from path
     """
+    excluded_dirs = {
+        'src', 'lib', 'utils', 'common', 'shared', 'core', 'base', 
+        'main', 'app', 'code', 'source', 'python', 'py', 'shared',
+        'home', 'kylerose1946', # NOTE Yeah, I know. Sue me.
+    }
+
     # Get relative path and its parts
     try:
         rel_path = file_path.relative_to(current_dir)
@@ -274,25 +278,35 @@ def _extract_tags(file_path: Path, current_dir: Path) -> List[str]:
     
     # Extract directory components (excluding home directory)
     home = Path.home()
-    parts = rel_path.parts
+    parts: tuple[str] = rel_path.parts
 
     # Filter out home directory components, include filename
-    tags = []
-    for part in parts:
-        if part != home.name:
-            tags.append(part)
-
-    # Filter out common/meaningless directories
-    excluded_dirs = {
-        'src', 'lib', 'utils', 'common', 'shared', 'core', 'base', 
-        'main', 'app', 'code', 'source', 'python', 'py', 'shared',
+    raw_tags_set: set[str] = {
+        part.lower() for part in parts 
+        if part 
+        and part.lower() not in excluded_dirs
+        and part != home.name
+        and not part.startswith('.') # Remove any path elements like '/'
+        and not part.startswith('~')
+        and not part.startswith('\\')
+        and not part.startswith('/')
     }
-    
-    tags = []
-    for part in parts:
-        if part not in excluded_dirs and not part.startswith('.'):
-            tags.append(part.strip('_').lower())
-    
+
+    tag_set = set()
+    for tag in raw_tags_set:
+        # Remove .py extension for tags
+        if tag.endswith('.py'):
+            tag = tag[:-3]
+
+        # Split on underscores and hyphens in tags
+        if '_' in tag or '-' in tag:
+            sub_tags = tag.replace('-', '_').split('_')
+            tag_set.update(sub for sub in sub_tags)
+        else:
+            tag_set.add(tag)
+
+    tags = list(tag_set)
+
     # Remove common stop words.
     common_stop_words = {
         'the', 'and', 'or', 'a', 'an', 'is', 'to', 'of', 'in', 'for',
@@ -307,10 +321,11 @@ def _extract_tags(file_path: Path, current_dir: Path) -> List[str]:
         'into', 'through', 'during', 'before', 'after', 'above',
         'below', 'over', 'under', 'again', 'further', 'once', 'two'
     }
+
     for tag in tags[:]:
         if tag.lower() in common_stop_words:
             tags.remove(tag)
-            
+
     tags = _get_all_nouns_and_proper_nouns_from_list_of_strings(tags)
     
     # Deduplicate tags, then sort alphabetically
@@ -441,7 +456,7 @@ def create_code_entry(callable_info: Dict[str, Any],
         relative_path = Path(*file_path.parts[1:]) if file_path.is_absolute() else file_path
 
     # Convert to string with forward slashes
-    file_path_str = str(relative_path).replace('\\', '/')
+    file_path_str = str(relative_path.resolve()).replace('\\', '/').lstrip('/')
 
     # Detect if this is test code
     is_test = _is_test_code(name, file_path)
