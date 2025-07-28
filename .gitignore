@@ -1,0 +1,33 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.venv/
+
+# Configuration files
+.env
+sql_configs.yaml
+
+# Log files
+*.log
+logs/
+
+# Database files
+*.sqlite3
+*.db
+*.db-journal
+*.sql
+
+# Test directories
+.vscode/
+.pytest_cache/
+debug/
+debug_*
+SAD.md
+.coverage*
