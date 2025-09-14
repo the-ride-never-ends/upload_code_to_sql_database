@@ -30,13 +30,19 @@ fi
 # Echo to indicate start of the program
 echo "STARTING PROGRAM..."
 
+# Get the directory where this script is located
+PROG_DIR="$HOME/upload_code_to_sql_database"
+cd "$PROG_DIR" || {
+    echo "ERROR: Cannot change to program directory: $PROG_DIR"
+    exit 1
+}
+
 # Check if virtual environment exists
 if [ ! -d ".venv" ]; then
     echo "ERROR: Virtual environment (.venv) not found!"
     echo "Please create a virtual environment first with: python -m venv .venv"
     exit 1
 fi
-
 
 # Activate the virtual environment
 echo "Activating virtual environment..."
@@ -61,10 +67,8 @@ else
     exit 1
 fi
 
-
 # Echo to indicate the start of the Python script
 echo "*** BEGIN PROGRAM ***"
-
 
 # Check if main.py exists
 if [ ! -f "main.py" ]; then
@@ -82,14 +86,13 @@ python_exit_code=$?
 
 # Echo to indicate the end of the Python script
 echo "*** END PROGRAM ***"
-echo "Python script exit code: $python_exit_code"
 
 # Deactivate the virtual environment
 deactivate
 
 # Echo to indicate program completion
 if [ $python_exit_code -eq 0 ]; then
-    echo "PROGRAM EXECUTION COMPLETE - SUCCESS"
+    echo "PROGRAM EXECUTION COMPLETE - SUCCESS (exit code: $python_exit_code)"
 else
     echo "PROGRAM EXECUTION COMPLETE - ERROR (exit code: $python_exit_code)"
 fi

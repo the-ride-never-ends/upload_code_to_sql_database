@@ -110,7 +110,6 @@ class UploadStats:
         - Dataclass is mutable; values updated throughout process
         - Field defaults ensure proper initialization without arguments
     """
-
     files_scanned: int = 0
     callables_found: int = 0
     skipped_not_standalone: int = 0

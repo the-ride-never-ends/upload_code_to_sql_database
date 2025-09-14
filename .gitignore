@@ -23,6 +23,8 @@ logs/
 *.db
 *.db-journal
 *.sql
+!create_table_codes.sql
+
 
 # Test directories
 .vscode/
